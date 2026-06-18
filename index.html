@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Back from the Excursion – Key Phrases Activity</title>
+<style>
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #12103a;
+  --bg2:       #1c1952;
+  --card:      #231f6e;
+  --card2:     #2a2580;
+  --coral:     #ff6b6b;
+  --coral2:    #ff8e8e;
+  --mint:      #4ecdc4;
+  --mint2:     #7eddd6;
+  --yellow:    #ffd93d;
+  --yellow2:   #ffe47a;
+  --lavender:  #c8b8ff;
+  --white:     #ffffff;
+  --off-white: #e8e4ff;
+  --muted:     #8880cc;
+  --success:   #56cf82;
+  --error:     #ff5c5c;
+  --shadow:    0 4px 24px rgba(0,0,0,0.4);
+  --radius:    16px;
+  --radius-sm: 10px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* ── GLOBAL PROGRESS BAR ── */
+.progress-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid rgba(200,184,255,0.1);
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.progress-label span { color: var(--lavender); }
+.progress-track {
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--mint), var(--yellow));
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+.section-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  justify-content: center;
+}
+.section-dot {
+  width: 28px; height: 4px;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.12);
+  transition: background 0.3s;
+}
+.section-dot.done   { background: var(--mint); }
+.section-dot.active { background: var(--yellow); }
+
+/* ── ACTIVITY PROGRESS (within section) ── */
+.activity-progress-wrap {
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(200,184,255,0.08);
+}
+.activity-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.activity-progress-label span { color: var(--yellow); }
+.activity-progress-track {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.activity-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--coral), var(--yellow));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  padding: 20px 16px 8px;
+  text-align: center;
+}
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(200,184,255,0.2);
+  border-radius: 99px;
+  padding: 4px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lavender);
+  margin-bottom: 10px;
+}
+.page-header h1 {
+  font-size: clamp(1.3rem, 5vw, 1.8rem);
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.page-header p {
+  font-size: 0.9rem;
+  color: var(--off-white);
+  opacity: 0.8;
+  line-height: 1.5;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── ROUND BADGE (Section 1) ── */
+.round-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,217,61,0.1);
+  border: 1px solid rgba(255,217,61,0.25);
+  border-radius: 99px;
+  padding: 4px 14px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--yellow);
+  margin-bottom: 10px;
+}
+
+/* ── MAIN CONTENT AREA ── */
+.content {
+  flex: 1;
+  padding: 16px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 99px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--coral), #ff4757);
+  color: var(--white);
+  box-shadow: 0 4px 20px rgba(255,107,107,0.4);
+  width: 100%;
+  font-size: 1.05rem;
+  padding: 16px;
+}
+.btn-primary:hover { box-shadow: 0 6px 28px rgba(255,107,107,0.55); }
+.btn-secondary {
+  background: rgba(255,255,255,0.08);
+  color: var(--lavender);
+  border: 1.5px solid rgba(200,184,255,0.25);
+}
+.btn-mint {
+  background: linear-gradient(135deg, var(--mint), #36b2a8);
+  color: var(--bg);
+  box-shadow: 0 4px 20px rgba(78,205,196,0.35);
+  width: 100%;
+  font-size: 1.05rem;
+  padding: 16px;
+}
+.btn-yellow {
+  background: linear-gradient(135deg, var(--yellow), #f0c000);
+  color: var(--bg);
+  box-shadow: 0 4px 20px rgba(255,217,61,0.35);
+  width: 100%;
+  font-size: 1.05rem;
+  padding: 16px;
+}
+.btn-reset {
+  background: rgba(255,255,255,0.06);
+  color: var(--muted);
+  border: 1.5px solid rgba(200,184,255,0.15);
+  font-size: 0.82rem;
+  padding: 8px 18px;
+}
+.btn-reset:hover { color: var(--lavender); border-color: rgba(200,184,255,0.35); }
+.section-nav {
+  padding: 12px 16px 20px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── FEEDBACK BANNER ── */
+.feedback {
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 14px;
+  display: none;
+}
+.feedback.correct  { background: rgba(86,207,130,0.15); border: 1.5px solid var(--success); color: #7fffaa; display: block; }
+.feedback.incorrect{ background: rgba(255,92,92,0.12);  border: 1.5px solid var(--error);   color: #ffaaaa; display: block; }
+
+/* ── SCORE CHIP ── */
+.score-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(200,184,255,0.15);
+  border-radius: 99px;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lavender);
+}
+.score-chip span { color: var(--yellow); }
+
+/* ══════════════════════════════════════════
+   WELCOME SCREEN
+══════════════════════════════════════════ */
+#screen-welcome {
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 0%, #2a1f80 0%, var(--bg) 65%);
+}
+.welcome-emoji {
+  font-size: 4rem;
+  line-height: 1;
+  margin-bottom: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+#screen-welcome h1 {
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--white), var(--lavender));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+#screen-welcome p {
+  color: var(--off-white);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto 24px;
+  opacity: 0.85;
+}
+.activity-map {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 28px;
+}
+.map-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(200,184,255,0.12);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  text-align: left;
+}
+.map-num {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.map-num.c { background: rgba(255,107,107,0.2); color: var(--coral); }
+.map-num.m { background: rgba(78,205,196,0.2);  color: var(--mint); }
+.map-num.s { background: rgba(255,217,61,0.2);  color: var(--yellow); }
+.map-num.d { background: rgba(200,184,255,0.2); color: var(--lavender); }
+.map-text strong { display: block; font-size: 0.88rem; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+.map-text span   { font-size: 0.78rem; color: var(--muted); }
+.welcome-btn-wrap { width: 100%; max-width: 420px; }
+
+/* ══════════════════════════════════════════
+   SECTION 1 – MATCH (paged, 2 rounds of 10)
+══════════════════════════════════════════ */
+.match-instructions { font-size: 0.85rem; color: var(--muted); text-align: center; margin-bottom: 14px; }
+.match-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.match-col-label {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted); text-align: center; margin-bottom: 6px;
+}
+.match-items { display: flex; flex-direction: column; gap: 8px; }
+.match-chip {
+  background: var(--card2);
+  border: 2px solid rgba(200,184,255,0.15);
+  border-radius: var(--radius-sm);
+  padding: 10px 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.12s;
+  user-select: none;
+  min-height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1.3;
+  -webkit-tap-highlight-color: transparent;
+}
+.match-chip.phrase { color: var(--yellow); border-color: rgba(255,217,61,0.25); }
+.match-chip.phrase.selected { border-color: var(--yellow); background: rgba(255,217,61,0.12); }
+.match-chip.phrase.matched  { background: rgba(86,207,130,0.12); border-color: var(--success); color: var(--success); cursor: default; }
+.match-def {
+  background: var(--card2);
+  border: 2px solid rgba(200,184,255,0.15);
+  border-radius: var(--radius-sm);
+  padding: 10px 8px;
+  font-size: 0.78rem;
+  color: var(--off-white);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  min-height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1.3;
+  -webkit-tap-highlight-color: transparent;
+}
+.match-def.highlight { border-color: var(--mint); background: rgba(78,205,196,0.08); }
+.match-def.matched   { background: rgba(86,207,130,0.12); border-color: var(--success); color: var(--success); cursor: default; }
+.match-def.wrong     { border-color: var(--error); background: rgba(255,92,92,0.1); }
+
+/* ══════════════════════════════════════════
+   SECTION 2 – MCQ
+══════════════════════════════════════════ */
+.question-counter { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.q-dots { display: flex; gap: 5px; }
+.q-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: background 0.2s; }
+.q-dot.done   { background: var(--mint); }
+.q-dot.active { background: var(--yellow); width: 20px; border-radius: 99px; }
+
+.dialogue-card {
+  background: var(--card2); border-radius: var(--radius);
+  padding: 18px; margin-bottom: 14px; border: 1px solid rgba(200,184,255,0.12);
+}
+.dialogue-line { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+.dialogue-line:last-child { margin-bottom: 0; }
+.speaker-bubble {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 800;
+}
+.speaker-a { background: rgba(255,107,107,0.25); color: var(--coral2); }
+.speaker-b { background: rgba(78,205,196,0.25);  color: var(--mint2); }
+.dialogue-text {
+  background: rgba(0,0,0,0.2); border-radius: 0 12px 12px 12px;
+  padding: 10px 14px; font-size: 0.9rem; line-height: 1.5;
+  color: var(--off-white); flex: 1;
+}
+.dialogue-text .highlight-phrase {
+  background: rgba(255,217,61,0.2); color: var(--yellow2);
+  font-weight: 700; border-radius: 4px; padding: 1px 5px;
+}
+.mcq-question { font-size: 0.9rem; font-weight: 600; color: var(--lavender); margin-bottom: 12px; line-height: 1.4; }
+.mcq-options  { display: flex; flex-direction: column; gap: 8px; }
+.mcq-opt {
+  background: rgba(255,255,255,0.05); border: 2px solid rgba(200,184,255,0.15);
+  border-radius: var(--radius-sm); padding: 13px 16px; font-size: 0.88rem;
+  color: var(--off-white); cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  text-align: left; line-height: 1.4; -webkit-tap-highlight-color: transparent;
+}
+.mcq-opt:hover    { border-color: var(--lavender); background: rgba(200,184,255,0.06); }
+.mcq-opt.correct  { border-color: var(--success); background: rgba(86,207,130,0.12); color: #7fffaa; }
+.mcq-opt.incorrect{ border-color: var(--error);   background: rgba(255,92,92,0.1);   color: #ffaaaa; }
+.mcq-opt.disabled { cursor: default; pointer-events: none; }
+
+/* ══════════════════════════════════════════
+   SECTION 3 – COMPLETE THE DIALOGUE (20 gaps)
+══════════════════════════════════════════ */
+.dialogue-fill {
+  background: var(--card2); border-radius: var(--radius);
+  padding: 18px; margin-bottom: 16px; border: 1px solid rgba(200,184,255,0.12);
+}
+.fill-line { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start; }
+.fill-line:last-child { margin-bottom: 0; }
+.fill-text { flex: 1; font-size: 0.9rem; line-height: 1.75; color: var(--off-white); }
+.fill-blank {
+  display: inline-block;
+  min-width: 90px;
+  border-bottom: 2.5px solid var(--yellow);
+  color: var(--yellow); font-weight: 700;
+  padding: 0 4px; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  border-radius: 3px; text-align: center;
+  background: rgba(255,217,61,0.06);
+  -webkit-tap-highlight-color: transparent;
+}
+.fill-blank:hover   { background: rgba(255,217,61,0.14); }
+.fill-blank.selected{ border-color: var(--coral); color: var(--coral2); background: rgba(255,107,107,0.12); }
+.fill-blank.filled-correct {
+  border-color: var(--success); color: var(--success);
+  background: rgba(86,207,130,0.1); cursor: default; pointer-events: none;
+}
+.fill-blank.filled-wrong {
+  border-color: var(--error); color: #ffaaaa;
+  background: rgba(255,92,92,0.1); animation: shake 0.3s ease;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-5px); }
+  75%      { transform: translateX(5px); }
+}
+
+.word-bank {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 14px; background: rgba(0,0,0,0.2); border-radius: var(--radius);
+}
+.word-bank-label {
+  width: 100%; font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+}
+.word-token {
+  background: var(--card2); border: 2px solid rgba(200,184,255,0.2);
+  border-radius: 99px; padding: 8px 16px; font-size: 0.85rem; font-weight: 700;
+  color: var(--lavender); cursor: pointer; transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.word-token:hover    { border-color: var(--lavender); background: rgba(200,184,255,0.08); }
+.word-token.selected { border-color: var(--coral); color: var(--coral2); background: rgba(255,107,107,0.1); }
+.word-token.used     { opacity: 0.28; pointer-events: none; }
+
+
+
+/* ══════════════════════════════════════════
+   RESULTS SCREEN
+══════════════════════════════════════════ */
+#screen-results {
+  align-items: center; justify-content: flex-start;
+  padding: 28px 20px 40px;
+  background: radial-gradient(ellipse at 50% 0%, #1f1060 0%, var(--bg) 65%);
+}
+.results-emoji { font-size: 3.5rem; text-align: center; margin-bottom: 12px; }
+#screen-results h1 {
+  font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 900; text-align: center; margin-bottom: 6px;
+  background: linear-gradient(135deg, var(--white), var(--lavender));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.results-summary { font-size: 0.9rem; color: var(--muted); text-align: center; margin-bottom: 24px; }
+.big-score { font-size: 4.5rem; font-weight: 900; text-align: center; line-height: 1; margin-bottom: 4px; color: var(--yellow); }
+.big-pct   { text-align: center; font-size: 1rem; color: var(--lavender); margin-bottom: 28px; }
+.section-results { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 500px; margin: 0 auto 28px; }
+.result-row {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card); border-radius: var(--radius-sm);
+  padding: 14px 16px; border: 1px solid rgba(200,184,255,0.1);
+}
+.result-icon  { font-size: 1.3rem; flex-shrink: 0; }
+.result-info  { flex: 1; }
+.result-info strong { display: block; font-size: 0.88rem; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+.result-info span   { font-size: 0.78rem; color: var(--muted); }
+.result-score-bar   { width: 70px; text-align: right; }
+.result-pct { font-size: 1.1rem; font-weight: 800; }
+.result-pct.great { color: var(--success); }
+.result-pct.ok    { color: var(--yellow); }
+.result-pct.low   { color: var(--coral); }
+
+.revision-box {
+  background: rgba(255,107,107,0.08); border: 1.5px solid rgba(255,107,107,0.25);
+  border-radius: var(--radius); padding: 16px;
+  width: 100%; max-width: 500px; margin: 0 auto 24px;
+}
+.revision-box h3 {
+  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--coral2); margin-bottom: 10px;
+}
+.revision-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.rev-tag {
+  background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3);
+  border-radius: 99px; padding: 5px 12px; font-size: 0.8rem; font-weight: 600; color: var(--coral2);
+}
+.results-btns { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 10px; }
+
+.completion-banner {
+  background: linear-gradient(135deg, rgba(78,205,196,0.15), rgba(200,184,255,0.1));
+  border: 1.5px solid rgba(78,205,196,0.35);
+  border-radius: var(--radius); padding: 16px 20px;
+  width: 100%; max-width: 500px; margin: 0 auto 20px; text-align: center;
+}
+.completion-banner h2 { font-size: 1rem; font-weight: 800; color: var(--mint2); margin-bottom: 4px; }
+.completion-banner p  { font-size: 0.88rem; color: var(--off-white); opacity: 0.9; line-height: 1.5; }
+
+/* ── ANIMATIONS ── */
+@keyframes popIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+.pop-in { animation: popIn 0.22s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+@media (min-width: 600px) {
+  .match-chip, .match-def { font-size: 0.9rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     WELCOME
+══════════════════════════════════════ -->
+<div id="screen-welcome" class="screen active">
+  <div class="welcome-emoji">🗣️</div>
+  <h1>Back from the Excursion</h1>
+  <p>Practise all 20 key phrases from the dialogue. Work through three activities to go from recognition to fluent use!</p>
+  <div class="activity-map">
+    <div class="map-item">
+      <div class="map-num c">1</div>
+      <div class="map-text">
+        <strong>Match the Expression 🎯</strong>
+        <span>Match all 20 phrases to their meanings (2 rounds)</span>
+      </div>
+    </div>
+    <div class="map-item">
+      <div class="map-num m">2</div>
+      <div class="map-text">
+        <strong>Meaning in Context 💬</strong>
+        <span>Choose the correct meaning</span>
+      </div>
+    </div>
+    <div class="map-item">
+      <div class="map-num s">3</div>
+      <div class="map-text">
+        <strong>Complete the Dialogue 🗂️</strong>
+        <span>Fill all 20 gaps across two pages</span>
+      </div>
+    </div>
+
+  </div>
+  <div class="welcome-btn-wrap">
+    <button class="btn btn-primary" onclick="startActivity()">Let's go! 🚀</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 1 – MATCH (2 rounds of 10)
+══════════════════════════════════════ -->
+<div id="screen-s1" class="screen">
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Section 1 of 3</span>
+      <div class="score-chip">Score: <span id="s1-score-chip">0</span>/20</div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="main-progress" style="width:0%"></div></div>
+    <div class="section-dots">
+      <div class="section-dot active"></div>
+      <div class="section-dot"></div>
+      <div class="section-dot"></div>
+    </div>
+  </div>
+  <div class="page-header">
+    <div class="section-badge">🎯 Section 1</div>
+    <h1>Match the Expression</h1>
+    <p>Tap a phrase, then tap its meaning.</p>
+  </div>
+  <div class="content">
+    <div class="activity-progress-wrap">
+      <div class="activity-progress-label"><span>Progress</span><span id="s1-activity-count">0 / 20 matched</span></div>
+      <div class="activity-progress-track"><div class="activity-progress-fill" id="s1-activity-bar" style="width:0%"></div></div>
+    </div>
+    <div id="s1-round-badge" class="round-badge">Round 1 of 2 — Expressions 1–10</div>
+    <p class="match-instructions">Tap a <span style="color:var(--yellow)">yellow phrase</span>, then tap its matching definition.</p>
+    <div class="match-columns">
+      <div>
+        <div class="match-col-label">Phrase</div>
+        <div class="match-items" id="match-phrases"></div>
+      </div>
+      <div>
+        <div class="match-col-label">Meaning</div>
+        <div class="match-items" id="match-defs"></div>
+      </div>
+    </div>
+    <div id="s1-feedback" class="feedback"></div>
+  </div>
+  <div class="section-nav">
+    <button class="btn btn-yellow"    id="s1-round2-btn"     onclick="startMatchRound(2)" style="display:none">Round 2: Next 10 expressions →</button>
+    <button class="btn btn-mint"      id="s1-next-btn"       onclick="goSection(2)"       style="display:none">Next: Meaning in Context 💬</button>
+    <button class="btn btn-secondary" id="s1-skip-btn"       onclick="goSection(2)"       style="display:none">Continue anyway →</button>
+    <button class="btn btn-reset"                            onclick="resetSection(1)">↺ Reset this activity</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 2 – MCQ
+══════════════════════════════════════ -->
+<div id="screen-s2" class="screen">
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Section 2 of 3</span>
+      <div class="score-chip">Score: <span id="s2-score-chip">0</span>/8</div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="s2-progress" style="width:33%"></div></div>
+    <div class="section-dots">
+      <div class="section-dot done"></div>
+      <div class="section-dot active"></div>
+      <div class="section-dot"></div>
+    </div>
+  </div>
+  <div class="page-header">
+    <div class="section-badge">💬 Section 2</div>
+    <h1>Meaning in Context</h1>
+    <p>Read the conversation and answer the question.</p>
+  </div>
+  <div class="content">
+    <div class="question-counter">
+      <div class="q-dots" id="s2-q-dots"></div>
+      <div class="score-chip">Question <span id="s2-q-num">1</span>/8</div>
+    </div>
+    <div class="dialogue-card"  id="s2-dialogue"></div>
+    <div class="mcq-question"   id="s2-question"></div>
+    <div class="mcq-options"    id="s2-options"></div>
+    <div id="s2-feedback" class="feedback"></div>
+  </div>
+  <div class="section-nav">
+    <button class="btn btn-secondary" id="s2-next-q-btn" onclick="nextMCQ()"    style="display:none">Next question →</button>
+    <button class="btn btn-yellow"    id="s2-next-btn"   onclick="goSection(3)" style="display:none">Next: Complete the Dialogue 🗂️ →</button>
+    <button class="btn btn-secondary" id="s2-skip-btn"   onclick="goSection(3)" style="display:none">Continue anyway →</button>
+    <button class="btn btn-reset"                        onclick="resetSection(2)">↺ Reset this activity</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 3 – COMPLETE THE DIALOGUE (20 gaps)
+══════════════════════════════════════ -->
+<div id="screen-s3" class="screen">
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Section 3 of 3</span>
+      <div class="score-chip">Score: <span id="s3-score-chip">0</span>/20</div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="s3-progress" style="width:66%"></div></div>
+    <div class="section-dots">
+      <div class="section-dot done"></div>
+      <div class="section-dot done"></div>
+      <div class="section-dot active"></div>
+    </div>
+  </div>
+  <div class="page-header">
+    <div class="section-badge">🗂️ Section 3</div>
+    <h1>Complete the Dialogue</h1>
+    <p>Tap a word from the word bank below, then tap a gap to fill it.</p>
+  </div>
+  <div class="content">
+    <div class="activity-progress-wrap">
+      <div class="activity-progress-label"><span>Progress</span><span id="s3-activity-count">0 / 20 filled</span></div>
+      <div class="activity-progress-track"><div class="activity-progress-fill" id="s3-activity-bar" style="width:0%"></div></div>
+    </div>
+    <div id="s3-round-badge" class="round-badge">Page 1 of 2 — Expressions 1–10</div>
+    <div class="dialogue-fill" id="s3-dialogue"></div>
+    <div class="word-bank"     id="s3-wordbank"><div class="word-bank-label">Word bank 📚</div></div>
+    <div id="s3-feedback" class="feedback"></div>
+  </div>
+  <div class="section-nav">
+    <button class="btn btn-yellow"    id="s3-page2-btn"  onclick="startS3Page(2)" style="display:none">Page 2: Next 10 expressions →</button>
+    <button class="btn btn-mint"      id="s3-next-btn"   onclick="showResults()"  style="display:none">See my results 🏆</button>
+    <button class="btn btn-secondary" id="s3-skip-p2"    onclick="startS3Page(2)" style="display:none">Continue to Page 2 anyway →</button>
+    <button class="btn btn-secondary" id="s3-skip-end"   onclick="showResults()"  style="display:none">See results anyway →</button>
+    <button class="btn btn-reset"                        onclick="resetSection(3)">↺ Reset this activity</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     RESULTS
+══════════════════════════════════════ -->
+<div id="screen-results" class="screen">
+  <div class="results-emoji" id="results-emoji"></div>
+  <h1 id="results-heading"></h1>
+  <p class="results-summary" id="results-summary"></p>
+  <div class="big-score" id="big-score"></div>
+  <div class="big-pct"   id="big-pct"></div>
+  <div class="completion-banner">
+    <h2 id="completion-title"></h2>
+    <p  id="completion-message"></p>
+  </div>
+  <div class="section-results" id="section-results"></div>
+  <div class="revision-box" id="revision-box" style="display:none">
+    <h3>💡 Expressions to review</h3>
+    <div class="revision-tags" id="revision-tags"></div>
+  </div>
+  <div class="results-btns">
+    <button class="btn btn-primary"   onclick="tryAgain()">Try again for a higher score 🔄</button>
+    <button class="btn btn-secondary" onclick="goSection(1)">↩ Go back to Section 1</button>
+  </div>
+  <p style="text-align:center; font-size:0.82rem; color:var(--muted); margin-top:12px; padding:0 20px; line-height:1.5;">💡 <strong style="color:var(--lavender)">Tip:</strong> Try again to improve your score! Each time you practise, you will remember more expressions.</p>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════ */
+
+// SECTION 1: All 20 match pairs, split into 2 rounds
+const MATCH_DATA = [
+  // Round 1 (index 0–9)
+  { phrase: "full-on",               def: "very intense or extreme",                    round: 1 },
+  { phrase: "proper (cold)",         def: "genuinely / really (used as an intensifier)", round: 1 },
+  { phrase: "read the room",         def: "notice how people around you are feeling",     round: 1 },
+  { phrase: "on-brand",              def: "typical or expected behaviour",               round: 1 },
+  { phrase: "holy moly",             def: "an exclamation of surprise",                  round: 1 },
+  { phrase: "I get it",              def: "I understand",                                round: 1 },
+  { phrase: "spot on",               def: "exactly right",                               round: 1 },
+  { phrase: "fudge (something)",     def: "to handle something carelessly or imprecisely",round: 1 },
+  { phrase: "a smidge",              def: "a tiny amount",                               round: 1 },
+  { phrase: "ropeable",              def: "extremely angry",                             round: 1 },
+  // Round 2 (index 10–19)
+  { phrase: "devo",                  def: "very upset or disappointed",                  round: 2 },
+  { phrase: "crack up",              def: "burst out laughing",                          round: 2 },
+  { phrase: "toxic",                 def: "very negative or harmful in behaviour",       round: 2 },
+  { phrase: "pushback",              def: "resistance or objection to something",        round: 2 },
+  { phrase: "sook",                  def: "a person who complains or is overly sensitive",round: 2 },
+  { phrase: "You know what I mean?", def: "a phrase checking the listener understands",  round: 2 },
+  { phrase: "grub",                  def: "a dirty or unpleasant person",                round: 2 },
+  { phrase: "character development", def: "personal growth through experience",          round: 2 },
+  { phrase: "Makes sense?",          def: "a phrase checking for understanding",         round: 2 },
+  { phrase: "good call",             def: "a good decision",                             round: 2 },
+];
+
+// SECTION 2: 8 MCQ questions
+const MCQ_DATA = [
+  {
+    dialogue: [
+      { speaker: "A", name: "Yui",  text: "How was the gallery? My feet are killing me but I loved it!" },
+      { speaker: "B", name: "Omar", text: "Same! It was full-on but amazing. I had no idea there was so much to see." }
+    ],
+    highlight: "full-on",
+    question: "What does Omar mean when he says it was \"full-on\"?",
+    options: ["It was very intense and overwhelming", "It was fully booked", "It was a full day of eating", "It was fully outside"],
+    correct: 0,
+    explanation: "\"Full-on\" means very intense or extreme. Omar is saying the visit was a lot to take in, but in a good way."
+  },
+  {
+    dialogue: [
+      { speaker: "A", name: "Priya",  text: "I reckon the sculpture garden was the best part." },
+      { speaker: "B", name: "Carlos", text: "Spot on! I was thinking the exact same thing." }
+    ],
+    highlight: "Spot on",
+    question: "When Carlos says \"Spot on!\", what does he mean?",
+    options: ["He sees a spot on the sculpture", "He completely agrees", "He is surprised", "He is confused"],
+    correct: 1,
+    explanation: "\"Spot on\" means exactly right. Carlos is agreeing that Priya's answer is perfect."
+  },
+  {
+    dialogue: [
+      { speaker: "A", name: "Fatima", text: "I was a bit of a sook on the bus home. I was devo we had to leave so early." },
+      { speaker: "B", name: "Jin",    text: "I know, right? I could have stayed for another two hours easily." }
+    ],
+    highlight: "devo",
+    question: "Fatima says she was \"devo\". How was she feeling?",
+    options: ["Very happy and excited", "Really hungry", "Very upset and disappointed", "A little bit tired"],
+    correct: 2,
+    explanation: "\"Devo\" is short for \"devastated\". It means very upset or disappointed. Fatima did not want to leave."
+  },
+  {
+    dialogue: [
+      { speaker: "A", name: "Marcus", text: "Did you see the painting on the third floor? It completely blew me away." },
+      { speaker: "B", name: "Aisha",  text: "Holy moly, yes! I stood there for about ten minutes just looking at it." }
+    ],
+    highlight: "Holy moly",
+    question: "Aisha says \"Holy moly!\". What kind of expression is this?",
+    options: ["A polite greeting", "An expression of surprise or amazement", "A way of disagreeing", "A question about food"],
+    correct: 1,
+    explanation: "\"Holy moly\" is an exclamation used to show surprise or strong reaction. Aisha is expressing how amazed she was."
+  },
+  {
+    dialogue: [
+      { speaker: "A", name: "Lena", text: "I took about 200 photos. Maybe a smidge too many." },
+      { speaker: "B", name: "Wei",  text: "Ha! Good call keeping them all though. You can use them for the class presentation." }
+    ],
+    highlight: "good call",
+    question: "When Wei says \"Good call\", what does he mean?",
+    options: ["Good phone call", "That was a good decision", "Good luck with that", "Good, call me later"],
+    correct: 1,
+    explanation: "\"Good call\" means that was a good decision or a good idea. Wei is saying Lena made a smart choice."
+  },
+  {
+    dialogue: [
+      { speaker: "A", name: "Sam",   text: "That tour guide was so funny. She made everyone crack up when she did the accent." },
+      { speaker: "B", name: "Nadia", text: "I know! The whole room lost it. Such good vibes the whole day." }
+    ],
+    highlight: "crack up",
+    question: "Sam says the tour guide made everyone \"crack up\". What happened?",
+    options: ["Everyone felt sad", "Everyone started arguing", "Everyone burst out laughing", "Everyone cracked the windows"],
+    correct: 2,
+    explanation: "\"Crack up\" means to burst out laughing. The tour guide said something so funny that everyone laughed."
+  },
+  {
+    dialogue: [
+      { speaker: "A", name: "Bea", text: "So the teacher asked us to read the room before starting the Q&A." },
+      { speaker: "B", name: "Tom", text: "I get it. She meant figure out the mood of the audience first, right?" }
+    ],
+    highlight: "read the room",
+    question: "What does \"read the room\" mean in this context?",
+    options: ["Read a book inside the room", "Understand the mood or atmosphere of the situation", "Look around the gallery walls", "Describe what is in the room"],
+    correct: 1,
+    explanation: "\"Read the room\" means to notice how people around you are feeling and act in a way that fits the situation."
+  },
+  {
+    dialogue: [
+      { speaker: "A", name: "Mia", text: "Jake kept complaining the whole time. Honestly, it was a bit toxic." },
+      { speaker: "B", name: "Leo", text: "Yeah, it really brought the energy down. Not on-brand for a class trip." }
+    ],
+    highlight: "on-brand",
+    question: "When Leo says Jake's behaviour was \"not on-brand\", what does he mean?",
+    options: ["Jake was not wearing a branded shirt", "Jake's behaviour was not typical or expected of him", "Jake did not follow the brand guidelines", "Jake forgot to bring lunch"],
+    correct: 1,
+    explanation: "\"On-brand\" means behaviour that is typical or expected of someone. Leo is saying Jake's attitude was out of character for a fun class trip."
+  }
+];
+
+// SECTION 3 PAGE 1: Expressions 1–10 (EAL2-simplified dialogue with context clues)
+const FILL_DATA_S3_P1 = {
+  words: [
+    "full-on", "proper (cold)", "read the room", "on-brand", "holy moly",
+    "I get it", "spot on", "fudge (something)", "a smidge", "ropeable"
+  ],
+  lines: [
+    { speaker: "A", name: "Priya",
+      parts: [
+        { type: "text",  content: "That excursion was very intense — really " },
+        { type: "blank", blankId: 0,  answer: "full-on" },
+        { type: "text",  content: "! But I loved it." }
+      ]
+    },
+    { speaker: "B", name: "Tomas",
+      parts: [
+        { type: "text",  content: "Me too! And the weather was " },
+        { type: "blank", blankId: 1,  answer: "proper (cold)" },
+        { type: "text",  content: " — I mean really, truly cold. I needed three jumpers!" }
+      ]
+    },
+    { speaker: "A", name: "Priya",
+      parts: [
+        { type: "text",  content: "Ha! You have to " },
+        { type: "blank", blankId: 2,  answer: "read the room" },
+        { type: "text",  content: " and notice what everyone else is wearing before you go out." }
+      ]
+    },
+    { speaker: "B", name: "Tomas",
+      parts: [
+        { type: "text",  content: "Okay, " },
+        { type: "blank", blankId: 3,  answer: "I get it" },
+        { type: "text",  content: " — I understand now! Did you see Jake? Forgetting his jacket is so " },
+        { type: "blank", blankId: 4,  answer: "on-brand" },
+        { type: "text",  content: " for him — it's exactly what he always does." }
+      ]
+    },
+    { speaker: "A", name: "Priya",
+      parts: [
+        { type: "text",  content: "" },
+        { type: "blank", blankId: 5,  answer: "holy moly" },
+        { type: "text",  content: "! Wow, yes — he was shivering so much! And you're " },
+        { type: "blank", blankId: 6,  answer: "spot on" },
+        { type: "text",  content: " — exactly right. That's totally Jake." }
+      ]
+    },
+    { speaker: "B", name: "Tomas",
+      parts: [
+        { type: "text",  content: "And then he tried to " },
+        { type: "blank", blankId: 7,  answer: "fudge (something)" },
+        { type: "text",  content: " the sign-in sheet — he wrote his name carelessly and got it wrong. The teacher was " },
+        { type: "blank", blankId: 8,  answer: "ropeable" },
+        { type: "text",  content: " — so angry!" }
+      ]
+    },
+    { speaker: "A", name: "Priya",
+      parts: [
+        { type: "text",  content: "I understand — maybe just " },
+        { type: "blank", blankId: 9,  answer: "a smidge" },
+        { type: "text",  content: " (a tiny bit) over the top. But she had a right to be annoyed!" }
+      ]
+    }
+  ]
+};
+
+// SECTION 3 PAGE 2: Expressions 11–20 (EAL2-simplified dialogue with context clues)
+const FILL_DATA_S3_P2 = {
+  words: [
+    "devo", "crack up", "toxic", "pushback", "sook",
+    "You know what I mean?", "grub", "character development", "Makes sense?", "good call"
+  ],
+  lines: [
+    { speaker: "B", name: "Tomas",
+      parts: [
+        { type: "text",  content: "I was " },
+        { type: "blank", blankId: 0,  answer: "devo" },
+        { type: "text",  content: " — really upset and disappointed — when Jake ruined the mood." }
+      ]
+    },
+    { speaker: "A", name: "Priya",
+      parts: [
+        { type: "text",  content: "His attitude was so " },
+        { type: "blank", blankId: 1,  answer: "toxic" },
+        { type: "text",  content: " — really negative and harmful for the group. Do you understand? " },
+        { type: "blank", blankId: 2,  answer: "You know what I mean?" }
+      ]
+    },
+    { speaker: "B", name: "Tomas",
+      parts: [
+        { type: "text",  content: "Totally! And he gave " },
+        { type: "blank", blankId: 3,  answer: "pushback" },
+        { type: "text",  content: " on everything — he argued and disagreed with every idea. Such a " },
+        { type: "blank", blankId: 4,  answer: "grub" },
+        { type: "text",  content: " — a dirty, unpleasant person." }
+      ]
+    },
+    { speaker: "A", name: "Priya",
+      parts: [
+        { type: "text",  content: "He's such a " },
+        { type: "blank", blankId: 5,  answer: "sook" },
+        { type: "text",  content: " — he cries and complains about every little thing. Does that make sense? " },
+        { type: "blank", blankId: 6,  answer: "Makes sense?" }
+      ]
+    },
+    { speaker: "B", name: "Tomas",
+      parts: [
+        { type: "text",  content: "Yes! But then the guide made everyone " },
+        { type: "blank", blankId: 7,  answer: "crack up" },
+        { type: "text",  content: " — we all burst out laughing at her funny story. The mood changed completely!" }
+      ]
+    },
+    { speaker: "A", name: "Priya",
+      parts: [
+        { type: "text",  content: "This trip was real " },
+        { type: "blank", blankId: 8,  answer: "character development" },
+        { type: "text",  content: " for us — we grew and changed as people through this experience." }
+      ]
+    },
+    { speaker: "B", name: "Tomas",
+      parts: [
+        { type: "text",  content: "Coming here was a " },
+        { type: "blank", blankId: 9,  answer: "good call" },
+        { type: "text",  content: " — the best decision. I'd do it again!" }
+      ]
+    }
+  ]
+};
+
+
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+const state = {
+  s1: { score: 0, total: 20, round: 1, missed: [] },
+  s2: { score: 0, total: 8,  currentQ: 0, answered: [], missed: [] },
+  s3: { score: 0, total: 20, filled: {}, missed: [] }
+};
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startActivity() { goSection(1); }
+
+function goSection(n) {
+  if (n === 1) { buildSection1(); showScreen('screen-s1'); }
+  if (n === 2) { buildSection2(); showScreen('screen-s2'); }
+  if (n === 3) { buildSection3(); showScreen('screen-s3'); }
+}
+
+function resetSection(n) {
+  if (n === 1) {
+    state.s1 = { score: 0, total: 20, round: 1, missed: [] };
+    buildSection1(); updateMainProgress(0);
+  } else if (n === 2) {
+    state.s2 = { score: 0, total: 8, currentQ: 0, answered: [], missed: [] };
+    buildSection2();
+  } else if (n === 3) {
+    state.s3 = { score: 0, total: 20, filled: {}, missed: [] };
+    buildSection3();
+  }
+}
+
+function tryAgain() {
+  state.s1 = { score: 0, total: 20, round: 1, missed: [] };
+  state.s2 = { score: 0, total: 8,  currentQ: 0, answered: [], missed: [] };
+  state.s3 = { score: 0, total: 20, filled: {}, missed: [] };
+  goSection(1);
+}
+
+/* ═══════════════════════════════════════════
+   SECTION 1 – MATCH (2 rounds of 10)
+═══════════════════════════════════════════ */
+let s1SelectedPhrase = null;
+
+function buildSection1() {
+  state.s1.round = 1;
+  state.s1.score = 0;
+  state.s1.missed = [];
+  s1SelectedPhrase = null;
+  document.getElementById('s1-score-chip').textContent = '0';
+  document.getElementById('s1-feedback').className = 'feedback';
+  document.getElementById('s1-next-btn').style.display   = 'none';
+  document.getElementById('s1-round2-btn').style.display = 'none';
+  document.getElementById('s1-skip-btn').style.display   = 'none';
+  updateActivityProgress('s1', 0, 20);
+  startMatchRound(1);
+}
+
+function startMatchRound(round) {
+  state.s1.round = round;
+  s1SelectedPhrase = null;
+
+  const roundData = MATCH_DATA.filter(d => d.round === round);
+  const badge = document.getElementById('s1-round-badge');
+  badge.textContent = round === 1
+    ? 'Round 1 of 2 — Expressions 1–10'
+    : 'Round 2 of 2 — Expressions 11–20';
+
+  document.getElementById('s1-feedback').className = 'feedback';
+  document.getElementById('s1-round2-btn').style.display = 'none';
+  document.getElementById('s1-next-btn').style.display   = 'none';
+
+  const phrases = shuffle([...roundData]);
+  const defs    = shuffle([...roundData]);
+
+  const phrasesEl = document.getElementById('match-phrases');
+  const defsEl    = document.getElementById('match-defs');
+  phrasesEl.innerHTML = '';
+  defsEl.innerHTML    = '';
+
+  phrases.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'match-chip phrase pop-in';
+    el.style.animationDelay = (i * 0.05) + 's';
+    el.textContent = item.phrase;
+    el.dataset.phrase = item.phrase;
+    el.onclick = () => selectPhrase(el);
+    phrasesEl.appendChild(el);
+  });
+
+  defs.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'match-def pop-in';
+    el.style.animationDelay = (i * 0.05 + 0.2) + 's';
+    el.textContent = item.def;
+    el.dataset.phrase = item.phrase;
+    el.onclick = () => selectDef(el);
+    defsEl.appendChild(el);
+  });
+}
+
+function selectPhrase(el) {
+  if (el.classList.contains('matched')) return;
+  document.querySelectorAll('.match-chip.phrase').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  s1SelectedPhrase = el;
+  clearMatchHighlights();
+}
+
+function clearMatchHighlights() {
+  document.querySelectorAll('.match-def').forEach(d => {
+    if (!d.classList.contains('matched')) d.classList.remove('highlight', 'wrong');
+  });
+}
+
+function selectDef(el) {
+  if (el.classList.contains('matched')) return;
+  if (!s1SelectedPhrase) {
+    el.classList.add('highlight');
+    setTimeout(() => el.classList.remove('highlight'), 700);
+    showFeedback('s1-feedback', false, 'Tap a yellow phrase first, then tap its meaning.');
+    return;
+  }
+  const phraseKey = s1SelectedPhrase.dataset.phrase;
+  const defPhrase = el.dataset.phrase;
+
+  if (phraseKey === defPhrase) {
+    s1SelectedPhrase.classList.remove('selected');
+    s1SelectedPhrase.classList.add('matched');
+    el.classList.add('matched');
+    s1SelectedPhrase = null;
+    state.s1.score++;
+    document.getElementById('s1-score-chip').textContent = state.s1.score;
+    updateActivityProgress('s1', state.s1.score, 20);
+    showFeedback('s1-feedback', true, '✅ Correct! Well done.');
+    // Show skip button after first match so students can always continue
+    document.getElementById('s1-skip-btn').style.display = 'block';
+
+    // Check if current round is complete
+    const roundMatched = document.querySelectorAll('.match-chip.phrase.matched').length;
+    const roundTotal   = MATCH_DATA.filter(d => d.round === state.s1.round).length;
+    if (roundMatched === roundTotal) {
+      setTimeout(() => {
+        if (state.s1.round === 1) {
+          showFeedback('s1-feedback', true, '🎉 Round 1 done! You matched 10 expressions. Ready for Round 2?');
+          document.getElementById('s1-round2-btn').style.display = 'block';
+          document.getElementById('s1-skip-btn').style.display   = 'block';
+        } else {
+          showFeedback('s1-feedback', true, '🎉 You matched all 20 expressions! Incredible work.');
+          document.getElementById('s1-next-btn').style.display   = 'block';
+          document.getElementById('s1-skip-btn').style.display   = 'none';
+          updateMainProgress(1);
+        }
+      }, 400);
+    }
+  } else {
+    el.classList.add('wrong');
+    setTimeout(() => el.classList.remove('wrong'), 600);
+    s1SelectedPhrase.classList.remove('selected');
+    s1SelectedPhrase = null;
+    if (!state.s1.missed.includes(phraseKey)) state.s1.missed.push(phraseKey);
+    showFeedback('s1-feedback', false, '❌ Not quite! Try a different match.');
+  }
+}
+
+/* ═══════════════════════════════════════════
+   SECTION 2 – MCQ
+═══════════════════════════════════════════ */
+function buildSection2() {
+  state.s2.currentQ  = 0;
+  state.s2.score     = 0;
+  state.s2.answered  = [];
+  state.s2.missed    = [];
+  document.getElementById('s2-score-chip').textContent  = '0';
+  document.getElementById('s2-next-btn').style.display   = 'none';
+  document.getElementById('s2-next-q-btn').style.display = 'none';
+  document.getElementById('s2-skip-btn').style.display   = 'none';
+
+  const dots = document.getElementById('s2-q-dots');
+  dots.innerHTML = '';
+  MCQ_DATA.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'q-dot' + (i === 0 ? ' active' : '');
+    d.id = 's2-qd-' + i;
+    dots.appendChild(d);
+  });
+  renderMCQ();
+}
+
+function renderMCQ() {
+  const q       = MCQ_DATA[state.s2.currentQ];
+  const already = state.s2.answered[state.s2.currentQ];
+
+  document.getElementById('s2-q-num').textContent = state.s2.currentQ + 1;
+
+  const dlg = document.getElementById('s2-dialogue');
+  dlg.innerHTML = q.dialogue.map(line => {
+    const bubbleCls = line.speaker === 'A' ? 'speaker-a' : 'speaker-b';
+    const re = new RegExp(`(${q.highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const text = line.text.replace(re, `<span class="highlight-phrase">$1</span>`);
+    return `<div class="dialogue-line">
+      <div class="speaker-bubble ${bubbleCls}">${line.name[0]}</div>
+      <div class="dialogue-text">${text}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('s2-question').textContent = q.question;
+
+  const opts = document.getElementById('s2-options');
+  opts.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'mcq-opt pop-in';
+    btn.style.animationDelay = (i * 0.06) + 's';
+    btn.textContent = opt;
+    if (already !== undefined) {
+      btn.classList.add('disabled');
+      if (i === q.correct) btn.classList.add('correct');
+      if (i === already && i !== q.correct) btn.classList.add('incorrect');
+    } else {
+      btn.onclick = () => answerMCQ(i, btn);
+    }
+    opts.appendChild(btn);
+  });
+
+  const fb = document.getElementById('s2-feedback');
+  if (already !== undefined) {
+    const correct = already === q.correct;
+    fb.textContent = correct ? '✅ Correct! ' + q.explanation : '❌ Not quite. ' + q.explanation;
+    fb.className = 'feedback ' + (correct ? 'correct' : 'incorrect');
+  } else {
+    fb.className = 'feedback';
+  }
+
+  const isLast   = state.s2.currentQ === MCQ_DATA.length - 1;
+  const nextQBtn  = document.getElementById('s2-next-q-btn');
+  const nextBtn   = document.getElementById('s2-next-btn');
+  const skipBtn   = document.getElementById('s2-skip-btn');
+  if (already !== undefined) {
+    if (isLast) {
+      nextQBtn.style.display = 'none'; nextBtn.style.display = 'block'; skipBtn.style.display = 'none';
+    } else {
+      nextQBtn.style.display = 'block'; nextBtn.style.display = 'none'; skipBtn.style.display = 'block';
+    }
+  } else {
+    nextQBtn.style.display = 'none'; nextBtn.style.display = 'none';
+    skipBtn.style.display = state.s2.currentQ > 0 ? 'block' : 'none';
+  }
+}
+
+function answerMCQ(i, btn) {
+  const q = MCQ_DATA[state.s2.currentQ];
+  state.s2.answered[state.s2.currentQ] = i;
+  document.querySelectorAll('.mcq-opt').forEach(b => b.classList.add('disabled'));
+
+  const correct = i === q.correct;
+  if (correct) {
+    btn.classList.add('correct');
+    state.s2.score++;
+    document.getElementById('s2-score-chip').textContent = state.s2.score;
+    showFeedback('s2-feedback', true,  '✅ Correct! ' + q.explanation);
+  } else {
+    btn.classList.add('incorrect');
+    document.querySelectorAll('.mcq-opt')[q.correct].classList.add('correct');
+    if (!state.s2.missed.includes(q.highlight)) state.s2.missed.push(q.highlight);
+    showFeedback('s2-feedback', false, '❌ Not quite. ' + q.explanation);
+  }
+
+  document.getElementById('s2-qd-' + state.s2.currentQ).className = 'q-dot done';
+
+  const isLast = state.s2.currentQ === MCQ_DATA.length - 1;
+  if (isLast) {
+    document.getElementById('s2-next-btn').style.display   = 'block';
+    document.getElementById('s2-next-q-btn').style.display = 'none';
+    document.getElementById('s2-skip-btn').style.display   = 'none';
+    updateMainProgress(2);
+  } else {
+    document.getElementById('s2-next-q-btn').style.display = 'block';
+    document.getElementById('s2-skip-btn').style.display   = 'block';
+  }
+}
+
+function nextMCQ() {
+  state.s2.currentQ++;
+  document.getElementById('s2-next-q-btn').style.display = 'none';
+  const nextDot = document.getElementById('s2-qd-' + state.s2.currentQ);
+  if (nextDot) nextDot.className = 'q-dot active';
+  renderMCQ();
+}
+
+/* ═══════════════════════════════════════════
+   FILL-THE-DIALOGUE ENGINE (Section 3, paged)
+═══════════════════════════════════════════ */
+function buildFillSectionPaged(sectionKey, fillData, page, dialogueId, wordbankId, feedbackId) {
+  const dlg = document.getElementById(dialogueId);
+  dlg.innerHTML = '';
+  fillData.lines.forEach(line => {
+    const lineEl = document.createElement('div');
+    lineEl.className = 'fill-line';
+    const bubbleCls = line.speaker === 'A' ? 'speaker-a' : 'speaker-b';
+    let html = `<div class="speaker-bubble ${bubbleCls}">${line.name[0]}</div><div class="fill-text">`;
+    line.parts.forEach(part => {
+      if (part.type === 'text') {
+        html += part.content;
+      } else {
+        html += `<span class="fill-blank" id="${sectionKey}-p${page}-blank-${part.blankId}"
+          data-section="${sectionKey}" data-page="${page}" data-blank="${part.blankId}" data-answer="${part.answer}"
+          onclick="fillSelectBlank(this)">__________</span>`;
+      }
+    });
+    html += `</div>`;
+    lineEl.innerHTML = html;
+    dlg.appendChild(lineEl);
+  });
+
+  const wb = document.getElementById(wordbankId);
+  wb.innerHTML = '<div class="word-bank-label">Word bank 📚</div>';
+  shuffle([...fillData.words]).forEach(word => {
+    const t = document.createElement('div');
+    t.className = 'word-token';
+    t.textContent = word;
+    t.dataset.word = word;
+    t.dataset.section = sectionKey;
+    t.dataset.page = page;
+    t.onclick = () => fillSelectWord(t, word, sectionKey);
+    wb.appendChild(t);
+  });
+}
+
+// Global state holders for fill interactions (per section)
+const fillState = {
+  s3: { word: null, wordEl: null }
+};
+
+function fillSelectWord(el, word, sectionKey) {
+  const fs = fillState[sectionKey];
+  const feedbackId = sectionKey + '-feedback';
+
+  document.querySelectorAll(`.word-token[data-section="${sectionKey}"]`).forEach(t => t.classList.remove('selected'));
+  document.querySelectorAll(`.fill-blank[data-section="${sectionKey}"]`).forEach(b => {
+    if (!b.classList.contains('filled-correct')) b.classList.remove('selected');
+  });
+
+  if (fs.word === word) { fs.word = null; fs.wordEl = null; return; }
+  el.classList.add('selected');
+  fs.word   = word;
+  fs.wordEl = el;
+  showFeedback(feedbackId, true, 'Now tap a gap (________) to place "' + word + '".');
+}
+
+function fillSelectBlank(el) {
+  const sectionKey = el.dataset.section;
+  const page       = parseInt(el.dataset.page);
+  const fs = fillState[sectionKey];
+  const feedbackId = sectionKey + '-feedback';
+
+  if (el.classList.contains('filled-correct')) return;
+
+  if (!fs.word) {
+    document.querySelectorAll(`.fill-blank[data-section="${sectionKey}"]`).forEach(b => {
+      if (!b.classList.contains('filled-correct')) b.classList.remove('selected');
+    });
+    el.classList.add('selected');
+    showFeedback(feedbackId, true, 'Now tap a word from the word bank to fill this gap.');
+    return;
+  }
+
+  const answer  = el.dataset.answer;
+  const blankId = el.dataset.blank;
+  const s       = state[sectionKey];
+  const pageData = page === 1 ? FILL_DATA_S3_P1 : FILL_DATA_S3_P2;
+  const pageTotal = pageData.words.length;
+
+  if (fs.word === answer) {
+    el.textContent = fs.word;
+    el.classList.remove('selected');
+    el.classList.add('filled-correct');
+    fs.wordEl.classList.add('used');
+    fs.wordEl.classList.remove('selected');
+    s.score++;
+    s.pageScore++;
+    s.filled[`p${page}-${blankId}`] = fs.word;
+    document.getElementById(sectionKey + '-score-chip').textContent = s.score;
+    updateActivityProgress(sectionKey, s.score, s.total);
+    fs.word = null; fs.wordEl = null;
+    showFeedback(feedbackId, true, '✅ Correct!');
+
+    // After 3 correct answers, show skip button so students can always continue
+    if (s.pageScore >= 3 && sectionKey === 's3') {
+      if (page === 1) document.getElementById('s3-skip-p2').style.display = 'block';
+      else            document.getElementById('s3-skip-end').style.display = 'block';
+    }
+
+    // Check if current page is complete
+    if (s.pageScore === pageTotal) {
+      setTimeout(() => {
+        if (page === 1) {
+          showFeedback(feedbackId, true, '🎉 Page 1 done! You filled 10 gaps. Ready for Page 2?');
+          document.getElementById('s3-page2-btn').style.display = 'block';
+          document.getElementById('s3-skip-p2').style.display   = 'none';
+        } else {
+          showFeedback(feedbackId, true, '🎉 You completed the whole dialogue! Amazing work!');
+          document.getElementById('s3-next-btn').style.display  = 'block';
+          document.getElementById('s3-skip-end').style.display  = 'none';
+          updateMainProgress(3);
+        }
+      }, 400);
+    }
+  } else {
+    el.classList.add('filled-wrong');
+    setTimeout(() => { el.classList.remove('filled-wrong', 'selected'); }, 500);
+    fs.wordEl.classList.remove('selected');
+    fs.word = null; fs.wordEl = null;
+    if (!s.missed.includes(answer)) s.missed.push(answer);
+    showFeedback(feedbackId, false, '❌ That word does not fit here. Try another word from the bank.');
+  }
+}
+
+// Allow students to skip past wrong answers and continue
+function buildFillSection(sectionKey, fillData, dialogueId, wordbankId, scoreChipId, feedbackId, nextBtnId, activityCountId, activityBarId) {
+  // Legacy stub — not used; kept for safety
+}
+
+function buildSection3() {
+  state.s3 = { score: 0, total: 20, filled: {}, missed: [], page: 1, pageScore: 0 };
+  fillState.s3 = { word: null, wordEl: null };
+  document.getElementById('s3-score-chip').textContent = '0';
+  document.getElementById('s3-feedback').className = 'feedback';
+  document.getElementById('s3-next-btn').style.display   = 'none';
+  document.getElementById('s3-page2-btn').style.display  = 'none';
+  updateActivityProgress('s3', 0, 20);
+  startS3Page(1);
+}
+
+function startS3Page(page) {
+  state.s3.page = page;
+  state.s3.pageScore = 0;
+  fillState.s3 = { word: null, wordEl: null };
+
+  const badge = document.getElementById('s3-round-badge');
+  const data  = page === 1 ? FILL_DATA_S3_P1 : FILL_DATA_S3_P2;
+  badge.textContent = page === 1 ? 'Page 1 of 2 — Expressions 1–10' : 'Page 2 of 2 — Expressions 11–20';
+
+  document.getElementById('s3-feedback').className    = 'feedback';
+  document.getElementById('s3-page2-btn').style.display  = 'none';
+  document.getElementById('s3-next-btn').style.display   = 'none';
+  document.getElementById('s3-skip-p2').style.display    = 'none';
+  document.getElementById('s3-skip-end').style.display   = 'none';
+
+  buildFillSectionPaged('s3', data, page, 's3-dialogue', 's3-wordbank', 's3-feedback');
+}
+
+
+/* ═══════════════════════════════════════════
+   PROGRESS HELPERS
+═══════════════════════════════════════════ */
+function updateMainProgress(section) {
+  const pct = (section / 3) * 100;
+  document.getElementById('main-progress').style.width = pct + '%';
+}
+
+function updateActivityProgress(sectionKey, current, total) {
+  const pct   = (current / total) * 100;
+  const bar   = document.getElementById(sectionKey + '-activity-bar');
+  const count = document.getElementById(sectionKey + '-activity-count');
+  if (bar)   bar.style.width = pct + '%';
+  if (count) {
+    const labels = { s1: 'matched', s3: 'filled' };
+    count.textContent = current + ' / ' + total + ' ' + (labels[sectionKey] || 'done');
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS
+═══════════════════════════════════════════ */
+function showResults() {
+  const total = state.s1.total + state.s2.total + state.s3.total;
+  const score = state.s1.score + state.s2.score + state.s3.score;
+  const pct   = Math.round((score / total) * 100);
+
+  let emoji, heading, summary;
+  if (pct >= 85) {
+    emoji = '🏆'; heading = 'Outstanding!';  summary = 'You have a great understanding of all these key phrases.';
+  } else if (pct >= 65) {
+    emoji = '🌟'; heading = 'Great effort!'; summary = 'You know most of these phrases well. Review a few more and you will be brilliant.';
+  } else if (pct >= 45) {
+    emoji = '💪'; heading = 'Good try!';     summary = 'You are building your knowledge. Try again to improve your score.';
+  } else {
+    emoji = '📚'; heading = 'Keep going!';   summary = 'These phrases take time to learn. Try the activity again and review the dialogue.';
+  }
+
+  document.getElementById('results-emoji').textContent   = emoji;
+  document.getElementById('results-heading').textContent  = heading;
+  document.getElementById('results-summary').textContent  = summary;
+  document.getElementById('big-score').textContent        = score + '/' + total;
+  document.getElementById('big-pct').textContent          = pct + '% correct';
+
+  // Personalised Lesson 3 completion message
+  let completionTitle, completionMsg;
+  if (pct >= 90) {
+    completionTitle = '🎉 Congratulations! Lesson 3 Complete!';
+    completionMsg   = 'Excellent revision of Lesson 3! You have a strong command of all the expressions. Keep it up!';
+  } else if (pct >= 70) {
+    completionTitle = '✅ Well Done — Lesson 3 Revision Complete!';
+    completionMsg   = 'Good work! Try again — you are close to a top score. A little more practice and you will get there!';
+  } else {
+    completionTitle = '📖 Lesson 3 Revision Complete!';
+    completionMsg   = 'Good effort! Tap "Try again for a higher score" below — you will remember more expressions each time you practise!';
+  }
+  document.getElementById('completion-title').textContent   = completionTitle;
+  document.getElementById('completion-message').textContent = completionMsg;
+
+  const sectionResults = [
+    { label: 'Match the Expression',   icon: '🎯', score: state.s1.score, total: state.s1.total },
+    { label: 'Meaning in Context',     icon: '💬', score: state.s2.score, total: state.s2.total },
+    { label: 'Complete the Dialogue',  icon: '🗂️', score: state.s3.score, total: state.s3.total },
+  ];
+
+  const srEl = document.getElementById('section-results');
+  srEl.innerHTML = '';
+  sectionResults.forEach(s => {
+    const p   = Math.round((s.score / s.total) * 100);
+    const cls = p >= 75 ? 'great' : p >= 50 ? 'ok' : 'low';
+    srEl.innerHTML += `<div class="result-row">
+      <div class="result-icon">${s.icon}</div>
+      <div class="result-info">
+        <strong>${s.label}</strong>
+        <span>${s.score} out of ${s.total} correct</span>
+      </div>
+      <div class="result-score-bar"><div class="result-pct ${cls}">${p}%</div></div>
+    </div>`;
+  });
+
+  const allMissed = [...new Set([...state.s1.missed, ...state.s2.missed, ...state.s3.missed])];
+  const revBox  = document.getElementById('revision-box');
+  const revTags = document.getElementById('revision-tags');
+  if (allMissed.length > 0) {
+    revBox.style.display = 'block';
+    revTags.innerHTML = allMissed.map(p => `<div class="rev-tag">${p}</div>`).join('');
+  } else {
+    revBox.style.display = 'none';
+  }
+
+  showScreen('screen-results');
+}
+
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function showFeedback(id, correct, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'feedback ' + (correct ? 'correct' : 'incorrect');
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+</script>
+</body>
+</html>
